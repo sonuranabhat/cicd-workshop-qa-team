@@ -1,36 +1,69 @@
-name: E2E Test
+name: Cypress E2E Tests
 
 on:
   workflow_run:
-    workflows: 
-      - Frontend Deployment
+    workflows:
+      - Frontend Deployment 
     types:
       - completed
+  workflow_dispatch:          # Allow manual run
 
 jobs:
-  test:
+  cypress-e2e:
+    name: Run Cypress E2E Tests
     runs-on: ubuntu-latest
+
     env:
-      CYPRESS_BASE_URL: https://t6.cicdws.bibek-mishra.com.np/
+      CYPRESS_BASE_URL: ${{ vars.CYPRESS_BASE_URL }}
+      CYPRESS_API_URL: ${{ vars.CYPRESS_API_URL }}
 
     steps:
-    - uses: actions/checkout@v4
+      - name: Checkout Code
+        uses: actions/checkout@v4
 
-    - name: Install dependencies  
-      working-directory: ./frontend  
-      run: npm install  
-    
-    - name: Install dependencies
-      working-directory: ./e2e-tests
-      run: npm install
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
 
-    - name: Print Cypress baseUrl
-      run: echo "CYPRESS_BASE_URL=$CYPRESS_BASE_URL"
+      - name: Install dependencies
+        working-directory: ./e2e-tests
+        run: npm install
 
-    - name: Wait for frontend to be live
-      run: npx wait-on $CYPRESS_BASE_URL --timeout 60000  
-    
-    - name: Run Cypress
-      working-directory: ./e2e-tests
-      run: 
-          npm run cypress:run
+      - name: Install Cypress binary
+        working-directory: ./e2e-tests
+        run: npx cypress install
+
+      - name: Debug environment variables
+        run: |
+          echo "CYPRESS_BASE_URL=$CYPRESS_BASE_URL"
+          echo "CYPRESS_API_URL=$CYPRESS_API_URL"
+
+      - name: Run Cypress tests
+        id: test
+        working-directory: ./e2e-tests
+        run: npx cypress run --config baseUrl=$CYPRESS_BASE_URL
+        continue-on-error: true
+
+      - name: Send Slack Notification
+        if: always()
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        run: |
+          if [[ "${{ steps.test.outcome }}" == "success" ]]; then
+            STATUS="✅ Cypress tests passed"
+          else
+            STATUS="🚨 Cypress tests failed"
+          fi
+          PAYLOAD=$(jq -n --arg text "$STATUS on branch ${{ github.ref_name }}" '{text: $text}')
+          curl -sSL -X POST -H 'Content-type: application/json' -d "$PAYLOAD" "$SLACK_WEBHOOK_URL"
+
+
+
+
+
+
+
+
+
