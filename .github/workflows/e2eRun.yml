@@ -9,6 +9,9 @@ on:
   workflow_dispatch:          # Allow manual run
 
 jobs:
+  e2e-tests:
+    runs-on: codebuild-team6-sonu-GitHub-Actions-Runner-${{ github.run_id }}-${{ github.run_attempt }}
+
   cypress-e2e:
     name: Run Cypress E2E Tests
     runs-on: ubuntu-latest

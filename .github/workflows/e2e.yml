@@ -6,6 +6,9 @@ on:
       - main
 
 jobs:
+  e2e-tests:
+    runs-on: codebuild-team6-sonu-GitHub-Actions-Runner-${{ github.run_id }}-${{ github.run_attempt }}
+
   build-and-test:
     runs-on: ubuntu-latest
     steps:
