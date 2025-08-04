@@ -1,8 +1,8 @@
 name: Frontend Deployment
 on:
   push:
-    branches:
-      - team6-Sonu
+    #branches:
+     # - team6-Sonu
   workflow_run:
     workflows:
       - Frontend Test
@@ -17,7 +17,7 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
         with:
-          ref: team1-ayush
+          ref: team6-Sonu
       - name: Debug - List project files
         run: ls -R
       - name: Set up Node.js
