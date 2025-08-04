@@ -3,7 +3,7 @@ name: Frontend PR & E2E Pipeline
 on:
   pull_request:
     branches: 
-      - main
+      - team6-Sonu
 
 jobs:
   build-and-test:
@@ -41,7 +41,9 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Deploy frontend to S3
-        run: ./scripts/deploy-frontend.sh  # Assume this script deploys frontend and sets output
+        run: 
+        chmod +x ./scripts/deploy-frontend.sh  # Assume this script deploys frontend and sets output
+      
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
