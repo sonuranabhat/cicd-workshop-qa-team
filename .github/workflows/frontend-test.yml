@@ -2,7 +2,7 @@ name: Frontend Tests
 on:
   push:
     branches:
-      - team1-ayush
+      - team6-Sonu
   pull_request:
     branches:
       - main
