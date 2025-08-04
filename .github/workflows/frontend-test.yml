@@ -1,9 +1,11 @@
 name: Frontend Tests
 on:
   push:
-    branches: team6-Sonu
-
-
+    branches:
+      - team1-ayush
+  pull_request:
+    branches:
+      - main
 jobs:
   test:
     runs-on: ubuntu-latest
