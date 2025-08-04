@@ -34,24 +34,23 @@ jobs:
           REACT_APP_API_URL: ${{ secrets.REACT_APP_API_URL }}
 
   deploy-frontend:
-    needs: build-and-test
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+  needs: build-and-test
+  runs-on: ubuntu-latest
+  steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
 
-      - name: Deploy frontend to S3
-        run: |
+    - name: Deploy frontend to S3
+      run: |
         chmod +x ./scripts/deploy-frontend.sh
         ./scripts/deploy-frontend.sh
+    # Assume this script deploys frontend and sets output
 
-      # Assume this script deploys frontend and sets output
-      
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: ${{ secrets.AWS_REGION }}
-          FRONTEND_ENV: ${{ secrets.FRONTEND_ENV }}
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        AWS_REGION: ${{ secrets.AWS_REGION }}
+        FRONTEND_ENV: ${{ secrets.FRONTEND_ENV }}
 
   cypress-e2e:
     needs: deploy-frontend
