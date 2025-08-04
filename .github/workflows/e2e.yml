@@ -2,7 +2,7 @@ name: Frontend PR & E2E Pipeline
 
 on:
   pull_request:
-    branches: 
+    branches:
       - main
 
 jobs:
@@ -34,23 +34,21 @@ jobs:
           REACT_APP_API_URL: ${{ secrets.REACT_APP_API_URL }}
 
   deploy-frontend:
-  needs: build-and-test
-  runs-on: ubuntu-latest
-  steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    - name: Deploy frontend to S3
-      run: |
-        chmod +x ./scripts/deploy-frontend.sh
-        ./scripts/deploy-frontend.sh
-    # Assume this script deploys frontend and sets output
-
-      env:
-        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        AWS_REGION: ${{ secrets.AWS_REGION }}
-        FRONTEND_ENV: ${{ secrets.FRONTEND_ENV }}
+      - name: Deploy frontend to S3
+        run: |
+          chmod +x ./scripts/deploy-frontend.sh
+          ./scripts/deploy-frontend.sh
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_REGION: ${{ secrets.AWS_REGION }}
+      FRONTEND_ENV: ${{ secrets.FRONTEND_ENV }}
 
   cypress-e2e:
     needs: deploy-frontend
@@ -63,8 +61,7 @@ jobs:
         run: npm ci
 
       - name: Run Cypress E2E Tests
-        run: |
-          npx cypress run
+        run: npx cypress run
         env:
           CYPRESS_BASE_URL: ${{ secrets.FRONTEND_URL }}
           CYPRESS_API_URL: ${{ secrets.REACT_APP_API_URL }}
